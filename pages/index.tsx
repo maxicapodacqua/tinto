@@ -3,11 +3,24 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { AuthContext } from '@/context/auth';
-import { CircularProgress, LinearProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
+import { useRouter } from 'next/router';
 
 export default function Home() {
 
-  const {loading} = React.useContext(AuthContext);
+  const {loading, user} = React.useContext(AuthContext);
+
+  const router = useRouter();
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+
+    if (!loading && user) {
+      router.push('/app');
+    }
+
+  }, [loading, user, router]);
 
 
 
