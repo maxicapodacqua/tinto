@@ -1,5 +1,6 @@
+import { AuthContext } from '@/context/auth';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Container } from '@mui/material';
+import { Alert, Container } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,17 +10,30 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
+import { AppwriteException } from 'appwrite';
+import { Aladin } from 'next/font/google';
+import { FormEvent, useContext, useState } from 'react';
+
 
 export default function Signup(): JSX.Element {
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const { loading, signup } = useContext(AuthContext);
+
+    const [error, setError] = useState<string | false>(false);
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        setError(false);
+
+        if (data.get('password') !== data.get('confirmPassword')) {
+            setError("Password don't match");
+            return;
+        }
+
+        signup(data.get('email') as string, data.get('password') as string, data.get('name') as string)
+            .catch((e: AppwriteException) => setError(e.message));
+
     };
 
     return <Container component="main" maxWidth="xs">
@@ -37,27 +51,18 @@ export default function Signup(): JSX.Element {
             <Typography component="h1" variant="h5">
                 Sign up
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                {error && <Alert severity='error' sx={{ mb: 3 }}>{error}</Alert>}
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <TextField
                             autoComplete="given-name"
-                            name="firstName"
+                            name="name"
                             required
                             fullWidth
                             id="firstName"
                             label="First Name"
                             autoFocus
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            required
-                            fullWidth
-                            id="lastName"
-                            label="Last Name"
-                            name="lastName"
-                            autoComplete="family-name"
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -82,9 +87,14 @@ export default function Signup(): JSX.Element {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <FormControlLabel
-                            control={<Checkbox value="allowExtraEmails" color="primary" />}
-                            label="I want to receive inspiration, marketing promotions and updates via email."
+                        <TextField
+                            required
+                            fullWidth
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            type="password"
+                            id="confirmPassword"
+                            autoComplete="password"
                         />
                     </Grid>
                 </Grid>
@@ -93,6 +103,7 @@ export default function Signup(): JSX.Element {
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
+                    disabled={loading}
                 >
                     Sign Up
                 </Button>
