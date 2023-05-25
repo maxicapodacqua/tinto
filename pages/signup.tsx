@@ -4,14 +4,11 @@ import { Alert, Container } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { AppwriteException } from 'appwrite';
-import { Aladin } from 'next/font/google';
 import { FormEvent, useContext, useState } from 'react';
 
 
