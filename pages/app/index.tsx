@@ -41,12 +41,9 @@ export default function AppHome(): JSX.Element {
                     //   alignItems: 'center',
                 }}
             >
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Welcome
+                <Typography variant="h4" component="p" gutterBottom>
+                    Welcome {user?.name}
                 </Typography>
-                <Button variant="contained" color="secondary" onClick={async () => {
-                    await logout();
-                }}>Logout</Button>
             </Box>
             <Footer />
         </Container>
