@@ -1,12 +1,15 @@
 import { AuthContext } from "@/context/auth";
-import { Menu, StyleRounded } from "@mui/icons-material";
-import { AppBar, Box, Button, Fab, IconButton, Toolbar, Typography } from "@mui/material";
+import { Favorite, HeartBroken, Home, Menu, Settings, StyleRounded } from "@mui/icons-material";
+import { AppBar, BottomNavigation, BottomNavigationAction, Box, Button, Container, Fab, IconButton, Paper, Toolbar, Tooltip, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import { NextLinkComposed } from "@/Link";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 
 
@@ -26,44 +29,27 @@ export default function (): JSX.Element {
 
     return <>
 
-        <Box sx={{
-            marginTop: 8,
-            marginLeft: 2,
-            marginRight: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            // alignItems: 'center',
-        }}
-        >
-            <Box sx={{
-                // alignContent: 'center',
-            }}>
 
-                <Typography component="h1" variant="h5">
+        <Container maxWidth="lg">
+            <Header/>
+            <Box
+                sx={{
+                    my: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    //   alignItems: 'center',
+                }}
+            >
+                <Typography variant="h4" component="h1" gutterBottom>
                     Welcome
                 </Typography>
                 <Button variant="contained" color="secondary" onClick={async () => {
                     await logout();
                 }}>Logout</Button>
             </Box>
-        </Box>
+            <Footer />
+        </Container>
 
-        <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
-            <Toolbar>
-                <IconButton color="inherit" aria-label="open drawer">
-                    <MenuIcon />
-                </IconButton>
-                <Fab color="secondary" aria-label="add">
-                    <AddIcon />
-                </Fab>
-                <Box sx={{ flexGrow: 1 }} />
-                <IconButton color="inherit">
-                    <SearchIcon />
-                </IconButton>
-                <IconButton color="inherit">
-                    <MoreIcon />
-                </IconButton>
-            </Toolbar>
-        </AppBar>
     </>
 }
