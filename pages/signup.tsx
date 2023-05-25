@@ -9,14 +9,23 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { AppwriteException } from 'appwrite';
-import { FormEvent, useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 
 
 export default function Signup(): JSX.Element {
 
-    const { loading, signup } = useContext(AuthContext);
+    const { loading, signup, user } = useContext(AuthContext);
 
     const [error, setError] = useState<string | false>(false);
+
+    const router = useRouter();
+
+    useEffect(() => {
+        if(!loading && user) {
+            router.push('/app');
+        }
+    }, [loading, user, router]);
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -57,8 +66,8 @@ export default function Signup(): JSX.Element {
                             name="name"
                             required
                             fullWidth
-                            id="firstName"
-                            label="First Name"
+                            id="name"
+                            label="Name"
                             autoFocus
                         />
                     </Grid>
