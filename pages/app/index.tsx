@@ -13,7 +13,7 @@ import Header from "@/components/Header";
 
 
 
-export default function (): JSX.Element {
+export default function AppHome(): JSX.Element {
     const { logout, user, loading } = useContext(AuthContext);
 
 

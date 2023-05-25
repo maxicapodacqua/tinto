@@ -3,7 +3,7 @@ import { HomeRounded, NoDrinksRounded, WineBarRounded } from "@mui/icons-materia
 import { BottomNavigation, BottomNavigationAction, IconButton, Paper } from "@mui/material";
 import { useRouter } from "next/router";
 
-export default function (): JSX.Element {
+export default function Footer(): JSX.Element {
     const router = useRouter();
 
     return <Paper elevation={2} sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} >

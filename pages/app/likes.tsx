@@ -10,7 +10,7 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { NextLinkComposed } from "@/Link";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-export default function () {
+export default function Likes() {
     return <>
         <Container maxWidth="lg">
             <Header />

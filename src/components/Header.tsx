@@ -9,7 +9,7 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { NextLinkComposed } from "@/Link";
 import Footer from "@/components/Footer";
 
-export default function () {
+export default function Header() {
 
     const {logout} = useContext(AuthContext);
 
