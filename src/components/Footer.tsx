@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 export default function Footer(): JSX.Element {
     const router = useRouter();
 
-    return <Paper elevation={2} sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} >
+    return <Paper elevation={6} sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} >
         <BottomNavigation
             showLabels={true}
             value={router.asPath}
