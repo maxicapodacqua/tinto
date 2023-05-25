@@ -1,5 +1,6 @@
 import { AuthContext } from '@/context/auth';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Alert } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -58,6 +59,7 @@ export default function Login() {
                     Sign in
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    {error && <Alert severity='error'>{error}</Alert>}
                     <TextField
                         margin="normal"
                         required
