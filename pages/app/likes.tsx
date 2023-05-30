@@ -1,12 +1,12 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { AddCircleOutlineOutlined, PlusOneRounded } from "@mui/icons-material";
-import { Autocomplete, Box, Container, IconButton, TextField, Typography } from "@mui/material";
+import { CloseRounded, DeleteRounded, SearchRounded } from "@mui/icons-material";
+import { Autocomplete, Box, Container, IconButton, LinearProgress, List, ListItem, ListItemSecondaryAction, ListItemText, TextField, Tooltip, Typography } from "@mui/material";
 import { useState } from "react";
 
 import { useQuery } from 'urql';
 import { graphql } from '../../src/gql';
-import { WineSearchDocument, WineSearchQuery } from "@/gql/graphql";
+import { WineSearchQuery } from "@/gql/graphql";
 
 
 const wineSearchQuery = graphql(`query WineSearch($wine: String) {
@@ -36,7 +36,7 @@ const wineSearchQuery = graphql(`query WineSearch($wine: String) {
       }
   }`);
 
-type AutocompleteSearchResult =  { value: string, label: string };
+type AutocompleteSearchResult = { value: string, label: string };
 const parseDataIntoOptions = (data: WineSearchQuery | undefined): AutocompleteSearchResult[] => {
 
     if (!data) {
@@ -74,11 +74,27 @@ const parseDataIntoOptions = (data: WineSearchQuery | undefined): AutocompleteSe
 
     return allWines;
 }
+
+const mock = ["Emporda 2012", "Vosne-Romanée Cros Parantoux 1990", "Vosne-Romanée Cros Parantoux 1996", "Grand Vin Pauillac (Premier Grand Cru Classé) 1982", "Château Margaux (Premier Grand Cru Classé) 2000", "Pauillac (Premier Grand Cru Classé) 2003", "Grand Vin Pauillac (Premier Grand Cru Classé) 2003", "Saint-Émilion Grand Cru (Premier Grand Cru Classé) 1990",
+"Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
+"Pauillac (Premier Grand Cru Classé) 1959",
+];
+
 export default function Likes() {
 
+    const [showSearch, setShowSearch] = useState(false);
     const [wineSearh, setWineSearch] = useState('');
     const [wineSelected, setWineSelected] = useState<AutocompleteSearchResult | null>();
-    const [{ data }] = useQuery({
+    const [{ data, fetching }] = useQuery({
         query: wineSearchQuery,
         pause: wineSearh === '' || wineSearh.length < 3,
         variables: {
@@ -87,6 +103,7 @@ export default function Likes() {
     });
 
     return <>
+            {fetching && <LinearProgress/>}
         <Container maxWidth="lg">
             <Header />
             <Box
@@ -97,30 +114,58 @@ export default function Likes() {
                     justifyContent: 'center',
                 }}
             >
-                <Typography variant="h4" component="p" gutterBottom>
-                    Wines you liked
-                    <IconButton>
-                        <AddCircleOutlineOutlined />
-                    </IconButton>
-                </Typography>
-                <Autocomplete
-                    // freeSolo
-                    // selectOnFocus
-                    // clearOnBlur
-                    // handleHomeEndKeys
-                    value={wineSelected}
-                    options={parseDataIntoOptions(data)}
-                    renderInput={(params) => (
-                        <TextField {...params} label={'Wine name'} fullWidth />
-                    )}
-                    filterOptions={(x) => x}
-                    onChange={(evt, newInputVal) => {
-                        setWineSelected(newInputVal);
-                    }}
-                    onInputChange={(evt, newInputVal) => {
-                        setWineSearch(newInputVal);
-                    }}
-                />
+                <Box>
+                    <Typography variant="h4" component="p" gutterBottom>
+                        Wines you liked
+                        <Tooltip title={'Search for a wine to add to your list'} >
+                        <IconButton onClick={() => setShowSearch(!showSearch)}>
+                            {showSearch ? <CloseRounded /> : <SearchRounded />}
+                        </IconButton>
+                        </Tooltip>
+                    </Typography>
+                </Box>
+                <Box >
+                    {showSearch &&
+                        <Box >
+                            <Autocomplete
+                                // freeSolo
+                                // selectOnFocus
+                                // clearOnBlur
+                                // handleHomeEndKeys
+                                value={wineSelected}
+                                options={parseDataIntoOptions(data)}
+                                renderInput={(params) => (
+                                    <TextField {...params} label={'Search wine name'} fullWidth />
+                                )}
+                                filterOptions={(x) => x}
+                                onChange={(evt, newInputVal) => {
+                                    setWineSelected(newInputVal);
+                                }}
+                                onInputChange={(evt, newInputVal) => {
+                                    setWineSearch(newInputVal);
+                                }}
+                            />
+                        </Box>
+                    }
+                </Box>
+                <Box sx={{ my: 2, bgcolor: 'background.paper' }}>
+
+                    <List>
+                        {mock.map((el) => {
+                            return <ListItem
+                                divider
+                            >
+                                <ListItemText primary={el} />
+                                <ListItemSecondaryAction >
+                                    <IconButton edge='end'>
+                                        <DeleteRounded />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        })}
+                    </List>
+
+                </Box>
             </Box>
             <Footer />
         </Container>
