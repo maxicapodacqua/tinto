@@ -7,6 +7,8 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import { AuthContextProvider } from '@/context/auth';
+import { Client, Provider as GraphQLProvider, cacheExchange, fetchExchange } from 'urql';
+
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -17,6 +19,10 @@ export interface MyAppProps extends AppProps {
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const client = new Client({
+    url: 'https://api.sampleapis.com/wines/graphql',
+    exchanges: [cacheExchange, fetchExchange],
+  });
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -26,7 +32,9 @@ export default function MyApp(props: MyAppProps) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <AuthContextProvider>
-          <Component {...pageProps} />
+          <GraphQLProvider value={client}>
+            <Component {...pageProps} />
+          </GraphQLProvider>
         </AuthContextProvider>
       </ThemeProvider>
     </CacheProvider>
