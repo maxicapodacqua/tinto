@@ -5,6 +5,16 @@ import { Autocomplete, Box, Container, IconButton, TextField, Typography } from 
 import { useState } from "react";
 
 import { useQuery } from 'urql';
+import {graphql} from '../../src/gql';
+
+
+const wineSearchQuery = graphql(`query WineSearch($wine: String) {
+    allReds(filter: {q: $wine}, perPage:10, page: 0) {
+      wine,
+      image,
+      id
+    }
+  }`);
 
 
 export default function Likes() {
@@ -12,20 +22,16 @@ export default function Likes() {
     const [wineName, setWineName] = useState('');
     const [wineSelected, setWineSelected] = useState<any>({});
     const [wineOptions, setWineOptions] = useState<[]>([]);
-    const [result] = useQuery({
-        query: `query MyQ($wine: String) {
-            allReds(filter: {wine: $wine}, perPage:10, page: 0) {
-              wine,
-              image,
-              id,
-          
-            }
-          }`,
+    const [{data}] = useQuery({
+        query: wineSearchQuery,
         pause: wineName === '' || wineName.length < 3,
         variables: {
             wine: wineName,
         }
     });
+
+    // const alerta = alert;
+    // alerta('Me llamo maxi');
 
     return <>
         <Container maxWidth="lg">
@@ -52,9 +58,12 @@ export default function Likes() {
                     clearOnBlur
                     handleHomeEndKeys
                     value={wineName}
-                    options={[{
-                        value: 'A', label: 'A',
-                    }]}
+                    options={data?.allReds?.map((w) => (
+                        {
+                            value: w?.id,
+                            label: w?.wine,
+                        }
+                    )) || []}
                     renderInput={(params) => (
                         <TextField {...params} label={'Wine name'} fullWidth />
                     )}
