@@ -19,7 +19,8 @@
     "appwrite": "^11.0.0",
     "next": "^13.4.3",
     "react": "^18.2.0",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "urql": "^4.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.2.3",
