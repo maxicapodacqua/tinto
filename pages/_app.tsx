@@ -8,6 +8,7 @@ import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import { AuthContextProvider } from '@/context/auth';
 import { Client, Provider as GraphQLProvider, cacheExchange, fetchExchange } from 'urql';
+import { DatabaseContextProvider } from '@/context/database';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -32,9 +33,11 @@ export default function MyApp(props: MyAppProps) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <AuthContextProvider>
-          <GraphQLProvider value={client}>
-            <Component {...pageProps} />
-          </GraphQLProvider>
+          <DatabaseContextProvider>
+            <GraphQLProvider value={client}>
+              <Component {...pageProps} />
+            </GraphQLProvider>
+          </DatabaseContextProvider>
         </AuthContextProvider>
       </ThemeProvider>
     </CacheProvider>

@@ -2,11 +2,15 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { CloseRounded, DeleteRounded, SearchRounded } from "@mui/icons-material";
 import { Autocomplete, Box, Container, IconButton, LinearProgress, List, ListItem, ListItemSecondaryAction, ListItemText, TextField, Tooltip, Typography } from "@mui/material";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { useQuery } from 'urql';
 import { graphql } from '../../src/gql';
-import { WineSearchQuery } from "@/gql/graphql";
+import { DatabaseContext } from "@/context/database";
+import { ID, Models, Permission, Query, Role } from "appwrite";
+import { AuthContext } from "@/context/auth";
+import { useRouter } from "next/router";
+import { Red, White, Rose, Dessert, Port, Sparkling, WineSearchQuery } from "@/gql/graphql";
 
 
 const wineSearchQuery = graphql(`query WineSearch($wine: String) {
@@ -36,74 +40,117 @@ const wineSearchQuery = graphql(`query WineSearch($wine: String) {
       }
   }`);
 
-type AutocompleteSearchResult = { value: string, label: string };
+type WineTypes = 'red' | 'white' | 'rose' | 'port' | 'dessert' | 'sparkling';
+type AutocompleteSearchResult = { value: string, label: string, type: WineTypes };
+
 const parseDataIntoOptions = (data: WineSearchQuery | undefined): AutocompleteSearchResult[] => {
 
     if (!data) {
         return [];
     }
-    const mapper = (w: { id: string, wine: string }): AutocompleteSearchResult => ({
+    const mapper = (w: White | Red | Rose | Dessert | Port | Sparkling): AutocompleteSearchResult => ({
         value: w?.id,
         label: w?.wine,
+        type: w?.__typename?.toLowerCase() as WineTypes,
     });
 
     const allWines: AutocompleteSearchResult[] = [];
 
     data.allReds?.forEach((w) => {
-        allWines.push(mapper(w!));
+        allWines.push(mapper(w as Red));
     });
     data.allWhites?.forEach((w) => {
-        allWines.push(mapper(w!));
+        allWines.push(mapper(w as White));
     });
 
     data.allRoses?.forEach((w) => {
-        allWines.push(mapper(w!));
+        allWines.push(mapper(w as Rose));
     });
 
     data.allPorts?.forEach((w) => {
-        allWines.push(mapper(w!));
+        allWines.push(mapper(w as Port));
     });
 
     data.allDesserts?.forEach((w) => {
-        allWines.push(mapper(w!));
+        allWines.push(mapper(w as Dessert));
     });
 
     data.allSparklings?.forEach((w) => {
-        allWines.push(mapper(w!));
+        allWines.push(mapper(w as Sparkling));
     });
 
     return allWines;
 }
 
-const mock = ["Emporda 2012", "Vosne-Romanée Cros Parantoux 1990", "Vosne-Romanée Cros Parantoux 1996", "Grand Vin Pauillac (Premier Grand Cru Classé) 1982", "Château Margaux (Premier Grand Cru Classé) 2000", "Pauillac (Premier Grand Cru Classé) 2003", "Grand Vin Pauillac (Premier Grand Cru Classé) 2003", "Saint-Émilion Grand Cru (Premier Grand Cru Classé) 1990",
-"Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959","Vosne-Romanée Cros Parantoux N.V.",
-"Pauillac (Premier Grand Cru Classé) 1959",
-];
-
 export default function Likes() {
 
+    const { user, loading } = useContext(AuthContext);
+    const router = useRouter();
+    // useEffect(() => {
+    //     if (!loading && !user) {
+    //         router.push('/');
+    //     }
+    // }, [loading, user, router]);
     const [showSearch, setShowSearch] = useState(false);
-    const [wineSearh, setWineSearch] = useState('');
+    const [wineSearch, setWineSearch] = useState('');
     const [wineSelected, setWineSelected] = useState<AutocompleteSearchResult | null>();
+    const [likedWines, setLikedWines] = useState<Models.Document[]>([]);
+    const { database } = useContext(DatabaseContext);
     const [{ data, fetching }] = useQuery({
         query: wineSearchQuery,
-        pause: wineSearh === '' || wineSearh.length < 3,
+        pause: wineSearch === '' || wineSearch.length < 3,
         variables: {
-            wine: wineSearh,
+            wine: wineSearch,
         }
     });
 
+
+    useEffect(() => {
+        if (!wineSelected || !user) {
+            return;
+        }
+
+        // const role = Role.user(user!.$id);
+        const newLikedWine = {
+            'wine_id': wineSelected.value,
+            'user_id': user!.$id,
+            'type': wineSelected.type,
+            'name': wineSelected.label,
+        };
+        database.createDocument('tinto', 'likes', ID.unique(), newLikedWine,
+            [
+                Permission.read(Role.user(user!.$id)),
+                Permission.delete(Role.user(user!.$id)),
+                Permission.update(Role.user(user!.$id)),
+                Permission.write(Role.user(user!.$id)),
+            ]
+        ).then((resp) => {
+            setLikedWines([resp, ...likedWines])
+        }).finally(() => {
+            setWineSelected(null);
+            setShowSearch(false);
+        });
+
+    }, [wineSelected, user]);
+
+    useEffect(() => {
+        if (!user) {
+            return;
+        }
+        database.listDocuments('tinto', 'likes', [
+            Query.equal('user_id', user!.$id),
+            Query.orderDesc('$createdAt'),
+        ])
+            .then((resp) => {
+                setLikedWines(resp.documents);
+            })
+            .catch((reason) => {
+                console.error(reason);
+            })
+    }, [user]);
+
     return <>
-            {fetching && <LinearProgress/>}
+        {fetching && <LinearProgress />}
         <Container maxWidth="lg">
             <Header />
             <Box
@@ -118,9 +165,9 @@ export default function Likes() {
                     <Typography variant="h4" component="p" gutterBottom>
                         Wines you liked
                         <Tooltip title={'Search for a wine to add to your list'} >
-                        <IconButton onClick={() => setShowSearch(!showSearch)}>
-                            {showSearch ? <CloseRounded /> : <SearchRounded />}
-                        </IconButton>
+                            <IconButton onClick={() => setShowSearch(!showSearch)}>
+                                {showSearch ? <CloseRounded /> : <SearchRounded />}
+                            </IconButton>
                         </Tooltip>
                     </Typography>
                 </Box>
@@ -151,11 +198,12 @@ export default function Likes() {
                 <Box sx={{ my: 2, bgcolor: 'background.paper' }}>
 
                     <List>
-                        {mock.map((el) => {
+                        {likedWines.map((el) => {
                             return <ListItem
+                                key={el.$id}
                                 divider
                             >
-                                <ListItemText primary={el} />
+                                <ListItemText primary={el.name} />
                                 <ListItemSecondaryAction >
                                     <IconButton edge='end'>
                                         <DeleteRounded />
