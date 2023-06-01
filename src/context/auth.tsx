@@ -43,7 +43,7 @@ export function AuthContextProvider({ children }: React.PropsWithChildren): JSX.
             setLoading(true);
             await appwriteAccount.createEmailSession(email, password)
             setUser(await appwriteAccount.get());
-        
+
         } finally {
             setLoading(false);
         }
@@ -62,12 +62,12 @@ export function AuthContextProvider({ children }: React.PropsWithChildren): JSX.
         }
     }
 
-    const signup = async (email: string, password: string, name? :string) => {
+    const signup = async (email: string, password: string, name?: string) => {
         try {
             setLoading(true);
             await appwriteAccount.create(ID.unique(), email, password, name);
             await login(email, password);
-        }finally {
+        } finally {
             setLoading(false);
         }
     }

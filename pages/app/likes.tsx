@@ -13,12 +13,11 @@ import WineSearch, { AutocompleteSearchResult } from "@/components/WineSearch";
 
 export default function Likes() {
 
-    const { database } = useContext(DatabaseContext);
+    const { database, likes: likedWines, setLikes: setLikedWines, addLike } = useContext(DatabaseContext);
     const { user, loading } = useContext(AuthContext);
     const router = useRouter();
     const [showSearch, setShowSearch] = useState(false);
     const [wineSelected, setWineSelected] = useState<AutocompleteSearchResult | null>();
-    const [likedWines, setLikedWines] = useState<Models.Document[]>([]);
     const [error, setError] = useState<string | false>(false);
     const [viewLoading, setViewLoading] = useState(false);
 
@@ -38,51 +37,26 @@ export default function Likes() {
             router.push('/');
         }
 
+
         if (wineSelected) {
-            const role = Role.user(user!.$id);
+            setViewLoading(true);
             const newLikedWine = {
                 'wine_id': wineSelected.value,
                 'type': wineSelected.type,
                 'name': wineSelected.label,
             };
-            setViewLoading(true);
-            database.createDocument('tinto', 'likes', ID.unique(), newLikedWine,
-                [
-                    Permission.read(role),
-                    Permission.delete(role),
-                    Permission.update(role),
-                    Permission.write(role),
-                ]
-            ).then((resp) => {
-                setLikedWines([resp, ...likedWines])
-            }).catch((reason: AppwriteException) => {
-                // ignore if they select a duplicate
-                if (reason.type !== 'document_already_exists') {
-                    setError('Something went wrong storing your selection');
-                    console.error(reason);
-                }
-            }).finally(() => {
-                setViewLoading(false);
-                setShowSearch(false);
-            });
-        }
-
-        if (user && !wineSelected) {
-            setViewLoading(true);
-            database.listDocuments('tinto', 'likes', [
-                Query.orderDesc('$createdAt'),
-            ])
-                .then((resp) => {
-                    setLikedWines(resp.documents);
-                })
-                .catch((reason) => {
-                    console.error(reason);
+            addLike(user!, newLikedWine)
+                .catch((reason: AppwriteException) => {
+                    // ignore if they select a duplicate
+                    if (reason.type !== 'document_already_exists') {
+                        setError('Something went wrong storing your selection');
+                        console.error(reason);
+                    }
                 }).finally(() => {
                     setViewLoading(false);
+                    setShowSearch(false);
                 });
         }
-
-
     }, [wineSelected, user, loading, router]);
 
     return <>
@@ -124,7 +98,7 @@ export default function Likes() {
                             {likedWines.map((el) => {
                                 return <ListItem
                                     key={el.$id}
-                                    
+
                                 >
                                     <ListItemText primary={el.name} />
                                     <ListItemSecondaryAction  >

@@ -73,16 +73,14 @@ const parseDataIntoOptions = (data: WineSearchQuery | undefined): AutocompleteSe
         allWines.push(mapper(w as Sparkling));
     });
 
-    // console.log(allWines);
-
     return allWines;
 }
 
-export default function WineSearch({onSelect}: {onSelect: (wine: AutocompleteSearchResult | null) => void}) :JSX.Element {
+export default function WineSearch({ onSelect }: { onSelect: (wine: AutocompleteSearchResult | null) => void }): JSX.Element {
 
     const [wineSelected, setWineSelected] = useState<AutocompleteSearchResult | null>();
     const [wineSearch, setWineSearch] = useState('');
-    const [{ data, fetching }] = useQuery({
+    const [{ data }] = useQuery({
         query: wineSearchQuery,
         pause: wineSearch === '' || wineSearch.length < 3,
         variables: {
@@ -91,23 +89,23 @@ export default function WineSearch({onSelect}: {onSelect: (wine: AutocompleteSea
     });
 
     return <Autocomplete
-                                // freeSolo
-                                // selectOnFocus
-                                // clearOnBlur
-                                // handleHomeEndKeys
-                                value={wineSelected || null}
-                                options={parseDataIntoOptions(data)}
-                                renderInput={(params) => (
-                                    <TextField {...params} label={'Search wine name'} fullWidth />
-                                )}
-                                filterOptions={(x) => x}
-                                onChange={(evt, newInputVal) => {
-                                    onSelect(newInputVal);
-                                    setWineSelected(newInputVal);
-                                }}
-                                onInputChange={(evt, newInputVal) => {
-                                    setWineSearch(newInputVal);
-                                }}
-                                isOptionEqualToValue={(option, value) => option.value == value.value && option.type === value.type}
-                            />
+        // freeSolo
+        // selectOnFocus
+        // clearOnBlur
+        // handleHomeEndKeys
+        value={wineSelected || null}
+        options={parseDataIntoOptions(data)}
+        renderInput={(params) => (
+            <TextField {...params} label={'Search wine name'} fullWidth />
+        )}
+        filterOptions={(x) => x}
+        onChange={(evt, newInputVal) => {
+            setWineSelected(newInputVal);
+            onSelect(newInputVal);
+        }}
+        onInputChange={(evt, newInputVal) => {
+            setWineSearch(newInputVal);
+        }}
+        isOptionEqualToValue={(option, value) => option.value == value.value && option.type === value.type}
+    />
 }
