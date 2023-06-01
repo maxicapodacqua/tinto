@@ -21,7 +21,7 @@ type AuthContextValue = {
 export function AuthContextProvider({ children }: React.PropsWithChildren): JSX.Element {
 
     const [user, setUser] = useState<AppwriteUser | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
 
 
     useEffect(() => {
