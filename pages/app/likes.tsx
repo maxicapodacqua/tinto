@@ -20,7 +20,18 @@ export default function Likes() {
     const [wineSelected, setWineSelected] = useState<AutocompleteSearchResult | null>();
     const [likedWines, setLikedWines] = useState<Models.Document[]>([]);
     const [error, setError] = useState<string | false>(false);
+    const [viewLoading, setViewLoading] = useState(false);
 
+    const handleDeleteWine = (id: string) => {
+        setViewLoading(true);
+        database.deleteDocument('tinto', 'likes', id)
+            .then(() => {
+                const likedWineUpdated = likedWines.filter((w) => w.$id !== id);
+                setLikedWines(likedWineUpdated);
+            }).finally(() => {
+                setViewLoading(false);
+            });
+    }
 
     useEffect(() => {
         if (!loading && !user) {
@@ -34,6 +45,7 @@ export default function Likes() {
                 'type': wineSelected.type,
                 'name': wineSelected.label,
             };
+            setViewLoading(true);
             database.createDocument('tinto', 'likes', ID.unique(), newLikedWine,
                 [
                     Permission.read(role),
@@ -50,11 +62,13 @@ export default function Likes() {
                     console.error(reason);
                 }
             }).finally(() => {
+                setViewLoading(false);
                 setShowSearch(false);
             });
         }
 
         if (user && !wineSelected) {
+            setViewLoading(true);
             database.listDocuments('tinto', 'likes', [
                 Query.orderDesc('$createdAt'),
             ])
@@ -63,7 +77,9 @@ export default function Likes() {
                 })
                 .catch((reason) => {
                     console.error(reason);
-                })
+                }).finally(() => {
+                    setViewLoading(false);
+                });
         }
 
 
@@ -100,25 +116,29 @@ export default function Likes() {
                         </Box>
                     }
                 </Box>
-                <Box sx={{ my: 2, bgcolor: 'background.paper' }}>
 
-                    <List>
-                        {likedWines.map((el) => {
-                            return <ListItem
-                                key={el.$id}
-                                divider
-                            >
-                                <ListItemText primary={el.name} />
-                                <ListItemSecondaryAction >
-                                    <IconButton edge='end'>
-                                        <DeleteRounded />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        })}
-                    </List>
+                {likedWines.length !== 0 &&
+                    <Box sx={{ my: 2, bgcolor: 'background.paper' }}>
 
-                </Box>
+                        <List>
+                            {likedWines.map((el) => {
+                                return <ListItem
+                                    key={el.$id}
+                                    
+                                >
+                                    <ListItemText primary={el.name} />
+                                    <ListItemSecondaryAction  >
+                                        <IconButton disabled={viewLoading} edge='end' onClick={() => {
+                                            handleDeleteWine(el.$id);
+                                        }}>
+                                            <DeleteRounded />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            })}
+                        </List>
+                    </Box>
+                }
             </Box>
             <Footer />
         </Container>
