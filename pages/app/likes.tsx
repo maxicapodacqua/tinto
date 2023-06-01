@@ -110,19 +110,18 @@ export default function Likes() {
             return;
         }
 
-        // const role = Role.user(user!.$id);
+        const role = Role.user(user!.$id);
         const newLikedWine = {
             'wine_id': wineSelected.value,
-            'user_id': user!.$id,
             'type': wineSelected.type,
             'name': wineSelected.label,
         };
         database.createDocument('tinto', 'likes', ID.unique(), newLikedWine,
             [
-                Permission.read(Role.user(user!.$id)),
-                Permission.delete(Role.user(user!.$id)),
-                Permission.update(Role.user(user!.$id)),
-                Permission.write(Role.user(user!.$id)),
+                Permission.read(role),
+                Permission.delete(role),
+                Permission.update(role),
+                Permission.write(role),
             ]
         ).then((resp) => {
             setLikedWines([resp, ...likedWines])
@@ -138,7 +137,6 @@ export default function Likes() {
             return;
         }
         database.listDocuments('tinto', 'likes', [
-            Query.equal('user_id', user!.$id),
             Query.orderDesc('$createdAt'),
         ])
             .then((resp) => {
