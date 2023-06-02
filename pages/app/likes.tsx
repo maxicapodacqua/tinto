@@ -41,6 +41,7 @@ export default function Likes() {
             setViewLoading(true);
             const newLikedWine = {
                 'wine_id': wineSelected.value,
+                'user_id': user?.$id,
                 'type': wineSelected.type,
                 'name': wineSelected.label,
             };
@@ -59,8 +60,8 @@ export default function Likes() {
     }, [wineSelected, user, authLoading, router]);
 
     return <>
+        <Header />
         <Container maxWidth="lg">
-            <Header />
             <Box
                 sx={{
                     my: 4,

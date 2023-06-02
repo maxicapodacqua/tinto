@@ -20,7 +20,7 @@ export default function Profile(): JSX.Element {
     }, [loading, user, router]);
 
     return <>
-            <Header />
+        <Header />
         <Container maxWidth="lg">
             <Box
                 sx={{
