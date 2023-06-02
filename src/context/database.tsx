@@ -6,17 +6,12 @@ import { AuthContext } from "./auth";
 
 export const DatabaseContext = createContext<DatabaseContextValue>({} as DatabaseContextValue);
 
-
 type DatabaseContextValue = {
     database: Databases,
     loading: boolean,
     likes: Models.Document[],
-    setLikes: Dispatch<SetStateAction<Models.Document[]>>,
-    addLike: (user: Models.User<{}>, wine: {
-        wine_id: string;
-        type: string;
-        name: string;
-    }) => Promise<void>,
+    addLike: (user: Models.User<{}>, wine: WineModel) => Promise<void>,
+    deleteLike: (id: string) => Promise<void>,
 };
 
 
@@ -49,8 +44,8 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
 
     const addWineToCollection = async (user: Models.User<{}>, wine: WineModel, collection: 'likes' | 'dislikes') => {
         try {
-            const role = Role.user(user.$id);
             setLoading(true);
+            const role = Role.user(user.$id);
             const resp = await appwriteDatabase.createDocument('tinto', collection, ID.unique(), wine,
                 [
                     Permission.read(role),
@@ -67,12 +62,28 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
         const resp = await addWineToCollection(user, wine, 'likes');
         setLikes([resp, ...likes]);
     }
+
+    const deleteWineFromCollection = async (id: string, collection: 'likes' | 'dislikes') => {
+        try {
+            setLoading(true);
+            await appwriteDatabase.deleteDocument('tinto', collection, id);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deleteLike = async (id: string) => {
+        await deleteWineFromCollection(id, 'likes');
+        const likedWineUpdated = likes.filter((w) => w.$id !== id);
+        setLikes(likedWineUpdated);
+    };
+
     return <DatabaseContext.Provider value={{
         database: appwriteDatabase,
         loading,
         likes,
-        setLikes,
         addLike,
+        deleteLike,
     }}>
         {children}
     </DatabaseContext.Provider>;

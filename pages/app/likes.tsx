@@ -3,9 +3,8 @@ import Header from "@/components/Header";
 import { CloseRounded, DeleteRounded, SearchRounded } from "@mui/icons-material";
 import { Alert, Box, Container, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Tooltip, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-
 import { DatabaseContext } from "@/context/database";
-import { AppwriteException, ID, Models, Permission, Query, Role } from "appwrite";
+import { AppwriteException } from "appwrite";
 import { AuthContext } from "@/context/auth";
 import { useRouter } from "next/router";
 import WineSearch, { AutocompleteSearchResult } from "@/components/WineSearch";
@@ -13,7 +12,7 @@ import WineSearch, { AutocompleteSearchResult } from "@/components/WineSearch";
 
 export default function Likes() {
 
-    const { database, likes: likedWines, setLikes: setLikedWines, addLike } = useContext(DatabaseContext);
+    const { likes: likedWines, addLike, deleteLike } = useContext(DatabaseContext);
     const { user, loading } = useContext(AuthContext);
     const router = useRouter();
     const [showSearch, setShowSearch] = useState(false);
@@ -23,10 +22,10 @@ export default function Likes() {
 
     const handleDeleteWine = (id: string) => {
         setViewLoading(true);
-        database.deleteDocument('tinto', 'likes', id)
-            .then(() => {
-                const likedWineUpdated = likedWines.filter((w) => w.$id !== id);
-                setLikedWines(likedWineUpdated);
+        deleteLike(id)
+            .catch((reason) => {
+                setError('Something went wrong removing wine from your list');
+                console.error(reason);
             }).finally(() => {
                 setViewLoading(false);
             });
