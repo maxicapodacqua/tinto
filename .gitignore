@@ -39,3 +39,6 @@ next-env.d.ts
 
 # graphql 
 src/gql
+
+# cloud functions
+code.tar.gz
