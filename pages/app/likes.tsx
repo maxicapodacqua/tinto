@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { Add, CloseRounded, DeleteRounded } from "@mui/icons-material";
+import { Add, CloseRounded, DeleteRounded, OneKSharp } from "@mui/icons-material";
 import { Alert, Box, Container, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Tooltip, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { DatabaseContext } from "@/context/database";
@@ -8,6 +8,7 @@ import { AppwriteException } from "appwrite";
 import { AuthContext } from "@/context/auth";
 import { useRouter } from "next/router";
 import WineSearch, { AutocompleteSearchResult } from "@/components/WineSearch";
+import WineListItem from "@/components/WineListItem";
 
 
 export default function Likes() {
@@ -95,21 +96,9 @@ export default function Likes() {
                     <Box sx={{ my: 2, bgcolor: 'background.paper' }}>
 
                         <List>
-                            {likedWines.map((el) => {
-                                return <ListItem
-                                    key={el.$id}
-
-                                >
-                                    <ListItemText primary={el.name} />
-                                    <ListItemSecondaryAction  >
-                                        <IconButton disabled={viewLoading} edge='end' onClick={() => {
-                                            handleDeleteWine(el.$id);
-                                        }}>
-                                            <DeleteRounded />
-                                        </IconButton>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            })}
+                            {likedWines.map((el) => 
+                                <WineListItem wine={el} disableActions={viewLoading} onDelete={handleDeleteWine} />
+                            )}
                         </List>
                     </Box>
                 }
