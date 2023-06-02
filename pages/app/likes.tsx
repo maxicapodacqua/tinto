@@ -12,7 +12,7 @@ import WineSearch, { AutocompleteSearchResult } from "@/components/WineSearch";
 
 export default function Likes() {
 
-    const { likes: likedWines, addLike, deleteLike, loading: dbLoading } = useContext(DatabaseContext);
+    const { likes: likedWines, addLike, deleteLike } = useContext(DatabaseContext);
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
     const [showSearch, setShowSearch] = useState(false);
