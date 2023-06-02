@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { CloseRounded, DeleteRounded, SearchRounded } from "@mui/icons-material";
+import { Add, CloseRounded, DeleteRounded } from "@mui/icons-material";
 import { Alert, Box, Container, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Tooltip, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { DatabaseContext } from "@/context/database";
@@ -12,8 +12,8 @@ import WineSearch, { AutocompleteSearchResult } from "@/components/WineSearch";
 
 export default function Likes() {
 
-    const { likes: likedWines, addLike, deleteLike } = useContext(DatabaseContext);
-    const { user, loading } = useContext(AuthContext);
+    const { likes: likedWines, addLike, deleteLike, loading: dbLoading } = useContext(DatabaseContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
     const [showSearch, setShowSearch] = useState(false);
     const [wineSelected, setWineSelected] = useState<AutocompleteSearchResult | null>();
@@ -32,7 +32,7 @@ export default function Likes() {
     }
 
     useEffect(() => {
-        if (!loading && !user) {
+        if (!authLoading && !user) {
             router.push('/');
         }
 
@@ -56,7 +56,7 @@ export default function Likes() {
                     setShowSearch(false);
                 });
         }
-    }, [wineSelected, user, loading, router]);
+    }, [wineSelected, user, authLoading, router]);
 
     return <>
         <Container maxWidth="lg">
@@ -75,7 +75,7 @@ export default function Likes() {
                         Wines you liked
                         <Tooltip title={'Search for a wine to add to your list'} >
                             <IconButton onClick={() => setShowSearch(!showSearch)}>
-                                {showSearch ? <CloseRounded /> : <SearchRounded />}
+                                {showSearch ? <CloseRounded /> : <Add />}
                             </IconButton>
                         </Tooltip>
                     </Typography>

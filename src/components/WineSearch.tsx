@@ -6,7 +6,6 @@ import { graphql } from '../../src/gql';
 import { Red, White, Rose, Dessert, Port, Sparkling, WineSearchQuery } from "@/gql/graphql";
 
 
-
 const wineSearchQuery = graphql(`query WineSearch($wine: String) {
     allReds(filter: {q: $wine}, perPage:10, page: 0) {
         wine,
@@ -80,7 +79,7 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
 
     const [wineSelected, setWineSelected] = useState<AutocompleteSearchResult | null>();
     const [wineSearch, setWineSearch] = useState('');
-    const [{ data }] = useQuery({
+    const [{ data, fetching }] = useQuery({
         query: wineSearchQuery,
         pause: wineSearch === '' || wineSearch.length < 3,
         variables: {
@@ -93,6 +92,7 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
         // selectOnFocus
         // clearOnBlur
         // handleHomeEndKeys
+        loading={fetching}
         value={wineSelected || null}
         options={parseDataIntoOptions(data)}
         renderInput={(params) => (
