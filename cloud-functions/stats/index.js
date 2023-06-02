@@ -15,30 +15,36 @@ module.exports = async function (req, res) {
     .setKey(req.variables["APPWRITE_FUNCTION_API_KEY"]);
 
   try{
-    const payload = JSON.parse(req.payload ?? '{}');
-    if(!payload.databaseId || !payload.collectionId) {
-      res.json({success: false, message: "Invalid payload."});
-      return;
-    }
+    // const payload = JSON.parse(req.payload ?? '{}');
+    // if(!payload.databaseId || !payload.collectionId) {
+    //   res.json({success: false, message: "Invalid payload."});
+    //   return;
+    // }
 
-    let sum = 0;
-    let done = false;
+    const eventData = JSON.parse(req.variables['APPWRITE_FUNCTION_EVENT_DATA'] ?? '{}');
 
-    while(!done) {
-      const response = await databases.listDocuments(payload.databaseId, payload.collectionId);
-      const documents = response.documents;
+    res.send({success: true, message: req.variables['APPWRITE_FUNCTION_EVENT_DATA']});
+    return;
+    
 
-      for(const document of documents) {
-        await databases.deleteDocument(payload.databaseId, payload.collectionId, document.$id);
-        sum++;
-      }
+    // let sum = 0;
+    // let done = false;
 
-      if(documents.length === 0) {
-        done = true;
-      }
-    }
+    // while(!done) {
+    //   const response = await databases.listDocuments(payload.databaseId, payload.collectionId);
+    //   const documents = response.documents;
 
-    res.send({success: true, sum: sum});
+    //   for(const document of documents) {
+    //     await databases.deleteDocument(payload.databaseId, payload.collectionId, document.$id);
+    //     sum++;
+    //   }
+
+    //   if(documents.length === 0) {
+    //     done = true;
+    //   }
+    // }
+
+    // res.send({success: true, sum: sum});
   } catch(e) {
     res.json({success: false, message: "Unexpected error: " + e});
   }
