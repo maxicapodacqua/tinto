@@ -97,7 +97,7 @@ export default function Likes() {
 
                         <List>
                             {likedWines.map((el) => 
-                                <WineListItem wine={el} disableActions={viewLoading} onDelete={handleDeleteWine} />
+                                <WineListItem key={el.$id} wine={el} disableActions={viewLoading} onDelete={handleDeleteWine} />
                             )}
                         </List>
                     </Box>

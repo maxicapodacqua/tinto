@@ -12,6 +12,7 @@ type DatabaseContextValue = {
     likes: Models.Document[],
     addLike: (user: Models.User<{}>, wine: WineModel) => Promise<void>,
     deleteLike: (id: string) => Promise<void>,
+    getStats: (wine_id: string, type: string) => Promise<Models.Document | null>,
 };
 
 
@@ -78,12 +79,26 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
         setLikes(likedWineUpdated);
     };
 
+    const getStats = async (wine_id: string, type: string) :Promise<Models.Document | null> => {
+        try {
+            setLoading(true);
+            const resp = await appwriteDatabase.listDocuments('tinto', 'stats', [
+                Query.equal('wine_id', wine_id),
+                Query.equal('type', type),
+            ]);
+            return resp.total > 0 ? resp.documents[0] : null
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return <DatabaseContext.Provider value={{
         database: appwriteDatabase,
         loading,
         likes,
         addLike,
         deleteLike,
+        getStats
     }}>
         {children}
     </DatabaseContext.Provider>;

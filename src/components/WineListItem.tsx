@@ -1,6 +1,8 @@
+import { DatabaseContext } from "@/context/database";
 import { DeleteRounded, OneKSharp, Recommend, ThumbDownAltOutlined, ThumbDownAltRounded, ThumbDownOffAlt, ThumbUpAltOutlined, ThumbUpOffAlt, ThumbUpRounded } from "@mui/icons-material";
 import { Badge, Box, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Stack, Typography } from "@mui/material";
 import { Models } from "appwrite";
+import { useContext, useEffect, useState } from "react";
 
 type WineListItemProps = {
     wine: Models.Document
@@ -10,6 +12,18 @@ type WineListItemProps = {
 
 export default function WineListItem({ wine, onDelete, disableActions }: WineListItemProps): JSX.Element {
 
+
+    const { getStats } = useContext(DatabaseContext);
+    const [stats, setStats] = useState<any | null>(null);
+
+
+    useEffect(() => {
+        getStats(wine.wine_id, wine.type)
+            .then((resp) => {
+                setStats(resp);
+            })
+            .catch(console.log);
+    }, []);
     const primary = <Typography
         variant="body1"
         component='p'
@@ -18,36 +32,24 @@ export default function WineListItem({ wine, onDelete, disableActions }: WineLis
         {wine.name}
     </Typography>;
 
-    // const secondary = <Badge badgeContent={100} color="secondary" overlap="rectangular" sx={{
-    //     // fontSize: '1px'
-    // }} anchorOrigin={{
-    //     vertical: "bottom",
-    //     horizontal: "right",
-    // }}>
-    //     <IconButton sx={{ p: 0, color: "primary.main" }}>
-    //         <ThumbUpAltOutlined />
-    //     </IconButton>
-    // </Badge>;
 
+    const secondary = <Box sx={{ pt: 0.5 }}>
+        <IconButton sx={{ p: 0, pr: 0.4, color: "primary.main" }}>
+            <ThumbUpOffAlt />
+        </IconButton>
+        <Typography variant="caption">
+            {stats ? stats.likes : 0}
+        </Typography>
 
-    const secondary = <Box sx={{pt:0.5}}>
-            <IconButton sx={{ p: 0, color: "success.main" }}>
-                <ThumbUpOffAlt  />
-            </IconButton>
-            <Typography variant="caption">
-            +99
-            </Typography>
+        <IconButton sx={{ p: 0, pr: 0.4, pl: 1.3, color: "primary.main" }}>
+            <ThumbDownOffAlt />
+        </IconButton>
+        <Typography variant="caption">
+            {stats ? stats.dislikes : 0}
+        </Typography>
 
-            <IconButton sx={{ p: 0, pl: 1.3, color: "error.main" }}>
-                <ThumbDownOffAlt/>
-            </IconButton>
-            <Typography variant="caption">
-            10
-            </Typography>
-            
-        </Box>;
+    </Box>;
     return <ListItem
-        key={wine.$id}
         sx={{
         }}
 
