@@ -137,7 +137,7 @@ export default function Likes() {
                     }}>
                         <Box>
                             <Typography variant="subtitle2" fontSize={'large'}>
-                                Looks like you haven't added any wines to your list!
+                                Looks like you haven&apos;t added any wines to your list!
                             </Typography>
                             <IconButton onClick={() => setShowSearch(true)} >
                                 <AddCircleOutlineRounded fontSize="large" color="primary" />
