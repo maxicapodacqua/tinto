@@ -92,7 +92,6 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
         // selectOnFocus
         // clearOnBlur
         // handleHomeEndKeys
-        closeText="CLOSE"
         loading={fetching}
         value={wineSelected || null}
         options={parseDataIntoOptions(data)}

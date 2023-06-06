@@ -24,31 +24,18 @@ export default function Likes() {
     const [speedDialOpen, setSpeedDialOpen] = useState(false);
     const [selection, setSelection] = useState<WineModel[]>([]);
 
-    const delayInc = 500;
     const handleDeleteSelection = () => {
         setViewLoading(true);
         setError(false);
-
-        const proms: Promise<void>[] = [];
-
-        selection.forEach((s, i) => {
-            proms.push(
-                new Promise(
-                    (resolve) => setTimeout(resolve, delayInc * (i + 1))
-                )
-                    .then(() => deleteLike(s.$id))
-            );
-        });
-
-        Promise.all(proms)
+        deleteLike(selection.map(s => s.$id))
             .catch((reason) => {
                 console.error(reason);
                 setError('Something went wrong removing wine from your list');
-            })
-            .finally(() => {
                 // Needing to refresh because appwrite backend is failing at handling multiple delete requests
                 // with a 500 error
                 refresh();
+            })
+            .finally(() => {
                 setSelection([]);
                 setViewLoading(false);
                 setSpeedDialOpen(false);
@@ -117,7 +104,6 @@ export default function Likes() {
                     {showSearch &&
                         <ClickAwayListener onClickAway={() => setShowSearch(false)}>
                             <Box>
-
                                 <WineSearch
                                     onSelect={(wine) => setWineSelected(wine)}
                                 />
@@ -128,7 +114,6 @@ export default function Likes() {
 
                 {likedWines.length !== 0 &&
                     <Box sx={{ mb: 15, bgcolor: 'background.paper' }}>
-
                         <List >
                             {likedWines.map((el) =>
                                 <WineListItem
@@ -142,6 +127,9 @@ export default function Likes() {
                         </List>
                     </Box>
                 }
+                {/* TODO: Add a message for when there are no wines */}
+
+                {/* TODO: Move this to a component */}
                 <Box sx={{
                     position: 'relative',
                 }}>

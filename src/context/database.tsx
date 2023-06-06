@@ -1,5 +1,5 @@
 import { Databases, ID, Models, Permission, Query, Role } from "appwrite";
-import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { appwriteDatabase } from "../../appwrite";
 import { AuthContext } from "./auth";
 
@@ -12,7 +12,7 @@ type DatabaseContextValue = {
     loading: boolean,
     likes: WineModel[],
     addLike: (user: Models.User<{}>, wine: WineInputModel) => Promise<void>,
-    deleteLike: (id: string) => Promise<void>,
+    deleteLike: (id: string | string[]) => Promise<void>,
     getStats: (wine_id: string, type: string) => Promise<Models.Document | null>,
 };
 
@@ -71,19 +71,39 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
         setLikes([resp as WineModel, ...likes]);
     }
 
-    const deleteWineFromCollection = async (id: string, collection: 'likes' | 'dislikes') => {
+    const deleteWinesFromCollection = async (ids: string[], collection: 'likes' | 'dislikes') => {
+        setLoading(true);
+
+        const delayInc = 500;
+        const proms: Promise<void>[] = [];
+
+        // Adding a delay on each delete to avoid server bottleneck on appwrite
+        ids.forEach((id, i) => {
+            proms.push(
+                new Promise(
+                    (resolve) => setTimeout(resolve, delayInc * (i + 1))
+                )
+                    .then(() => {
+                        appwriteDatabase.deleteDocument('tinto', collection, id)
+                    })
+            );
+        });
         try {
-            setLoading(true);
-            await appwriteDatabase.deleteDocument('tinto', collection, id);
+            await Promise.all(proms);
         } finally {
             setLoading(false);
         }
     };
 
-    const deleteLike = async (id: string) => {
-        // TODO: make this a bulk delete
-        await deleteWineFromCollection(id, 'likes');
-        const likedWineUpdated = likes.filter((w) => w.$id !== id);
+    const deleteLike = async (id: string | string[]) => {
+        let ids: string[];
+        if (!Array.isArray(id)) {
+            ids = [id];
+        } else {
+            ids = id;
+        }
+        await deleteWinesFromCollection(ids, 'likes');
+        const likedWineUpdated = likes.filter((w) => !ids.includes(w.$id));
         setLikes(likedWineUpdated);
     };
 
