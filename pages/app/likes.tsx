@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { AddRounded, DeleteRounded, WineBar, WineBarOutlined } from "@mui/icons-material";
-import { Alert, Box, ClickAwayListener, Container, List, SpeedDial, SpeedDialAction, SpeedDialIcon, Typography, useTheme } from "@mui/material";
+import { Add, AddCircle, AddCircleOutlineRounded, AddCircleRounded, AddOutlined, AddRounded, DeleteRounded, WineBar, WineBarOutlined } from "@mui/icons-material";
+import { Alert, Box, ClickAwayListener, Container, IconButton, List, SpeedDial, SpeedDialAction, SpeedDialIcon, Typography, useTheme } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { DatabaseContext, WineModel } from "@/context/database";
 import { AppwriteException } from "appwrite";
@@ -14,7 +14,7 @@ import WineListItem from "@/components/WineListItem";
 export default function Likes() {
 
     const theme = useTheme();
-    const { likes: likedWines, addLike, deleteLike, refresh, } = useContext(DatabaseContext);
+    const { likes: likedWines, addLike, deleteLike, refresh, loading: dbLoading } = useContext(DatabaseContext);
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
     const [showSearch, setShowSearch] = useState(false);
@@ -127,7 +127,24 @@ export default function Likes() {
                         </List>
                     </Box>
                 }
-                {/* TODO: Add a message for when there are no wines */}
+                {!dbLoading && likedWines.length === 0 && !showSearch &&
+                    <Box sx={{
+                        my: 4,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                    }}>
+                        <Box>
+                            <Typography variant="subtitle2" fontSize={'large'}>
+                                Looks like you haven't added any wines to your list!
+                            </Typography>
+                            <IconButton onClick={() => setShowSearch(true)} >
+                                <AddCircleOutlineRounded fontSize="large" color="primary" />
+                            </IconButton>
+                        </Box>
+                    </Box>
+                }
 
                 {/* TODO: Move this to a component */}
                 <Box sx={{
