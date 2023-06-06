@@ -1,7 +1,7 @@
 import { DatabaseContext, WineModel, WineTypes } from "@/context/database";
 import { DeleteRounded, OneKSharp, Recommend, ThumbDownAltOutlined, ThumbDownAltRounded, ThumbDownOffAlt, ThumbUpAltOutlined, ThumbUpOffAlt, ThumbUpRounded, WineBar } from "@mui/icons-material";
 import { Badge, Checkbox, Box, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Stack, Typography, ListItemButton, ListItemIcon, Tooltip, capitalize } from "@mui/material";
-import { blue, blueGrey, deepOrange, grey, orange, pink, purple, red, white } from "@mui/material/colors";
+import { amber, blue, blueGrey, cyan, deepOrange, grey, orange, pink, purple, red, white, yellow } from "@mui/material/colors";
 import { Models } from "appwrite";
 import { useContext, useEffect, useState } from "react";
 
@@ -40,7 +40,7 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
         const colorType = w.type as WineTypes;
         switch (colorType) {
             case "white":
-                return grey[400];
+                return amber[200];
             case "red":
                 return red[900];
             case "rose":
@@ -48,7 +48,7 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
             case "port":
                 return purple[900];
             case "dessert":
-                return deepOrange[700];
+                return cyan[900];
             case "sparkling":
                 return blueGrey[200];
             default:
