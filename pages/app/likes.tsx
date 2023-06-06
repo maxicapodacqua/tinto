@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { Add, AddRounded, CloseRounded, DeleteRounded, OneKSharp, WineBar, WineBarOutlined } from "@mui/icons-material";
-import { Alert, Backdrop, Box, Container, Fab, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, SpeedDial, SpeedDialAction, SpeedDialIcon, Tooltip, Typography, useTheme } from "@mui/material";
+import { AddRounded, DeleteRounded, WineBar, WineBarOutlined } from "@mui/icons-material";
+import { Alert, Box, ClickAwayListener, Container, List, SpeedDial, SpeedDialAction, SpeedDialIcon, Typography, useTheme } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { DatabaseContext, WineModel } from "@/context/database";
 import { AppwriteException } from "appwrite";
@@ -111,25 +111,23 @@ export default function Likes() {
                     {error && <Alert severity="error" >{error}</Alert>}
                     <Typography variant="h4" component="p" gutterBottom>
                         Wines you liked
-                        <Tooltip title={'Search for a wine to add to your list'} >
-                            <IconButton onClick={() => setShowSearch(!showSearch)}>
-                                {showSearch ? <CloseRounded /> : <Add />}
-                            </IconButton>
-                        </Tooltip>
                     </Typography>
                 </Box>
                 <Box >
                     {showSearch &&
-                        <Box >
-                            <WineSearch
-                                onSelect={(wine) => setWineSelected(wine)}
-                            />
-                        </Box>
+                        <ClickAwayListener onClickAway={() => setShowSearch(false)}>
+                            <Box>
+
+                                <WineSearch
+                                    onSelect={(wine) => setWineSelected(wine)}
+                                />
+                            </Box>
+                        </ClickAwayListener>
                     }
                 </Box>
 
                 {likedWines.length !== 0 &&
-                    <Box sx={{ my: 2, mb: 15, bgcolor: 'background.paper' }}>
+                    <Box sx={{ mb: 15, bgcolor: 'background.paper' }}>
 
                         <List >
                             {likedWines.map((el) =>
@@ -138,7 +136,6 @@ export default function Likes() {
                                     wine={el}
                                     checked={selection.indexOf(el) !== -1}
                                     disableActions={viewLoading}
-                                    // onDelete={handleDeleteWine}
                                     onItemSelected={handleWineSelection}
                                 />
                             )}
@@ -147,15 +144,8 @@ export default function Likes() {
                 }
                 <Box sx={{
                     position: 'relative',
-                    // position: 'fixed',
-                    // bottom: theme.spacing(10),
-                    // right: theme.spacing(3),
-                    // height: 'auto',
-                    // transform: 'translateZ(0px)',
                 }}>
                     <SpeedDial
-
-
                         open={speedDialOpen}
                         onOpen={() => setSpeedDialOpen(true)}
                         onClose={() => setSpeedDialOpen(false)}
@@ -164,14 +154,6 @@ export default function Likes() {
                             bottom: theme.spacing(10),
                             right: theme.spacing(3.5),
                         }}
-                        // FabProps={{color: 'primary'}}
-                        // FabProps={{
-                        //     sx: {
-                        //         position: 'fixed',
-                        //         bottom: spacing(10),
-                        //         right: spacing(3),
-                        //     }
-                        // }}
                         ariaLabel="options"
                         icon={<SpeedDialIcon openIcon={<WineBar />} icon={<WineBarOutlined />} />}
                     >
@@ -187,18 +169,18 @@ export default function Likes() {
                                 <DeleteRounded color={selection.length === 0 ? "inherit" : "secondary"} />
                             }
                         />
-
-
                         <SpeedDialAction
                             tooltipOpen
+                            onClick={() => {
+                                setShowSearch(true);
+                                setSpeedDialOpen(false)
+                            }}
                             tooltipTitle={'Add wine'}
                             title={'Add wine'}
                             icon={
                                 <AddRounded color="secondary" />
                             }
                         />
-
-
                     </SpeedDial>
                 </Box>
             </Box>

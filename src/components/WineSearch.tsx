@@ -1,4 +1,4 @@
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Box, List, ListItem, TextField } from "@mui/material";
 import { useState } from "react";
 
 import { useQuery } from 'urql';
@@ -92,11 +92,18 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
         // selectOnFocus
         // clearOnBlur
         // handleHomeEndKeys
+        closeText="CLOSE"
         loading={fetching}
         value={wineSelected || null}
         options={parseDataIntoOptions(data)}
         renderInput={(params) => (
-            <TextField {...params} label={'Search wine name'} fullWidth />
+            <Box sx={{ m: 0, bgcolor: 'background.paper' }}>
+                <List >
+                    <ListItem divider  >
+                        <TextField {...params} variant="standard" label={'Search your wine to add name'} fullWidth />
+                    </ListItem>
+                </List>
+            </Box>
         )}
         filterOptions={(x) => x}
         onChange={(evt, newInputVal) => {

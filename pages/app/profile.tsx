@@ -35,8 +35,6 @@ export default function Profile(): JSX.Element {
                 </Typography>
                 <Box
                     sx={{
-                        width: '100%',
-                        maxWidth: 360,
                         bgcolor: 'background.paper'
                     }}
                 >

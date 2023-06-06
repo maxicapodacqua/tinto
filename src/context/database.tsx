@@ -22,7 +22,7 @@ export type WineModel = WineInputModel & Models.Document;
 
 export function DatabaseContextProvider({ children }: React.PropsWithChildren): JSX.Element {
 
-    const [likes, setLikes] = useState<Models.Document[]>([]);
+    const [likes, setLikes] = useState<WineModel[]>([]);
     const [loading, setLoading] = useState(true);
 
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -30,18 +30,6 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
     useEffect(() => {
         if (!authLoading && user) {
             refresh();
-            // setLoading(true);
-            // appwriteDatabase.listDocuments('tinto', 'likes', [
-            //     Query.orderDesc('$createdAt'),
-            // ])
-            //     .then((resp) => {
-            //         setLikes(resp.documents);
-            //     })
-            //     .catch((reason) => {
-            //         console.error(reason);
-            //     }).finally(() => {
-            //         setLoading(false);
-            //     });
         }
     }, [user, authLoading]);
 
@@ -51,7 +39,7 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
             Query.orderDesc('$createdAt'),
         ])
             .then((resp) => {
-                setLikes(resp.documents);
+                setLikes(resp.documents as WineModel[]);
             })
             .catch((reason) => {
                 console.error(reason);
