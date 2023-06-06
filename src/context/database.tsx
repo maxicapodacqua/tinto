@@ -8,15 +8,17 @@ export const DatabaseContext = createContext<DatabaseContextValue>({} as Databas
 
 type DatabaseContextValue = {
     database: Databases,
+    refresh: () => Promise<void>,
     loading: boolean,
-    likes: Models.Document[],
-    addLike: (user: Models.User<{}>, wine: WineModel) => Promise<void>,
+    likes: WineModel[],
+    addLike: (user: Models.User<{}>, wine: WineInputModel) => Promise<void>,
     deleteLike: (id: string) => Promise<void>,
     getStats: (wine_id: string, type: string) => Promise<Models.Document | null>,
 };
 
 
-type WineModel = { wine_id: string, type: string, name: string };
+type WineInputModel = { wine_id: string, type: string, name: string };
+export type WineModel = WineInputModel & Models.Document;
 
 export function DatabaseContextProvider({ children }: React.PropsWithChildren): JSX.Element {
 
@@ -27,23 +29,40 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
 
     useEffect(() => {
         if (!authLoading && user) {
-            setLoading(true);
-            appwriteDatabase.listDocuments('tinto', 'likes', [
-                Query.orderDesc('$createdAt'),
-            ])
-                .then((resp) => {
-                    setLikes(resp.documents);
-                })
-                .catch((reason) => {
-                    console.error(reason);
-                }).finally(() => {
-                    setLoading(false);
-                });
+            refresh();
+            // setLoading(true);
+            // appwriteDatabase.listDocuments('tinto', 'likes', [
+            //     Query.orderDesc('$createdAt'),
+            // ])
+            //     .then((resp) => {
+            //         setLikes(resp.documents);
+            //     })
+            //     .catch((reason) => {
+            //         console.error(reason);
+            //     }).finally(() => {
+            //         setLoading(false);
+            //     });
         }
     }, [user, authLoading]);
 
+    const refresh = async () => {
+        setLoading(true);
+        appwriteDatabase.listDocuments('tinto', 'likes', [
+            Query.orderDesc('$createdAt'),
+        ])
+            .then((resp) => {
+                setLikes(resp.documents);
+            })
+            .catch((reason) => {
+                console.error(reason);
+            }).finally(() => {
+                setLoading(false);
+            });
+    }
 
-    const addWineToCollection = async (user: Models.User<{}>, wine: WineModel, collection: 'likes' | 'dislikes') => {
+
+
+    const addWineToCollection = async (user: Models.User<{}>, wine: WineInputModel, collection: 'likes' | 'dislikes') => {
         try {
             setLoading(true);
             const role = Role.user(user.$id);
@@ -59,7 +78,7 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
             setLoading(false);
         }
     }
-    const addLike = async (user: Models.User<{}>, wine: WineModel) => {
+    const addLike = async (user: Models.User<{}>, wine: WineInputModel) => {
         const resp = await addWineToCollection(user, wine, 'likes');
         setLikes([resp, ...likes]);
     }
@@ -74,12 +93,13 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
     };
 
     const deleteLike = async (id: string) => {
+        // TODO: make this a bulk delete
         await deleteWineFromCollection(id, 'likes');
         const likedWineUpdated = likes.filter((w) => w.$id !== id);
         setLikes(likedWineUpdated);
     };
 
-    const getStats = async (wine_id: string, type: string) :Promise<Models.Document | null> => {
+    const getStats = async (wine_id: string, type: string): Promise<Models.Document | null> => {
         try {
             setLoading(true);
             const resp = await appwriteDatabase.listDocuments('tinto', 'stats', [
@@ -94,6 +114,7 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
 
     return <DatabaseContext.Provider value={{
         database: appwriteDatabase,
+        refresh,
         loading,
         likes,
         addLike,

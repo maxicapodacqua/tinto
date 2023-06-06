@@ -1,16 +1,18 @@
-import { DatabaseContext } from "@/context/database";
+import { DatabaseContext, WineModel } from "@/context/database";
 import { DeleteRounded, OneKSharp, Recommend, ThumbDownAltOutlined, ThumbDownAltRounded, ThumbDownOffAlt, ThumbUpAltOutlined, ThumbUpOffAlt, ThumbUpRounded } from "@mui/icons-material";
-import { Badge, Box, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Stack, Typography } from "@mui/material";
+import { Badge, Checkbox, Box, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Stack, Typography } from "@mui/material";
 import { Models } from "appwrite";
 import { useContext, useEffect, useState } from "react";
 
 type WineListItemProps = {
-    wine: Models.Document
-    onDelete: (id: string) => void,
+    wine: WineModel,
+    // onDelete: (id: string) => void,
+    onItemSelected: (wine: WineModel) => void,
     disableActions: boolean,
+    checked: boolean,
 };
 
-export default function WineListItem({ wine, onDelete, disableActions }: WineListItemProps): JSX.Element {
+export default function WineListItem({ wine, disableActions, onItemSelected, checked }: WineListItemProps): JSX.Element {
 
 
     const { getStats } = useContext(DatabaseContext);
@@ -52,16 +54,26 @@ export default function WineListItem({ wine, onDelete, disableActions }: WineLis
     return <ListItem
         sx={{
         }}
+        divider
 
-
+        // disablePadding
+        secondaryAction={
+            <Checkbox
+                onChange={() => onItemSelected(wine)}
+                color="info"
+                edge={'end'}
+                checked={checked}
+            />
+        }
     >
         <ListItemText primary={primary} secondary={secondary} />
-        <ListItemSecondaryAction>
+        {/* <ListItemSecondaryAction>
             <IconButton disabled={disableActions} edge='end' onClick={() => {
                 onDelete(wine.$id)
             }}>
                 <DeleteRounded />
             </IconButton>
-        </ListItemSecondaryAction>
+        </ListItemSecondaryAction> */}
+
     </ListItem>
 }
