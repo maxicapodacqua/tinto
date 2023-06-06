@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery } from 'urql';
 import { graphql } from '../../src/gql';
 import { Red, White, Rose, Dessert, Port, Sparkling, WineSearchQuery } from "@/gql/graphql";
+import { WineTypes } from "@/context/database";
 
 
 const wineSearchQuery = graphql(`query WineSearch($wine: String) {
@@ -33,7 +34,6 @@ const wineSearchQuery = graphql(`query WineSearch($wine: String) {
       }
   }`);
 
-type WineTypes = 'red' | 'white' | 'rose' | 'port' | 'dessert' | 'sparkling';
 export type AutocompleteSearchResult = { value: string, label: string, type: WineTypes };
 
 const parseDataIntoOptions = (data: WineSearchQuery | undefined): AutocompleteSearchResult[] => {

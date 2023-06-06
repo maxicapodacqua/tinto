@@ -1,6 +1,7 @@
-import { DatabaseContext, WineModel } from "@/context/database";
-import { DeleteRounded, OneKSharp, Recommend, ThumbDownAltOutlined, ThumbDownAltRounded, ThumbDownOffAlt, ThumbUpAltOutlined, ThumbUpOffAlt, ThumbUpRounded } from "@mui/icons-material";
-import { Badge, Checkbox, Box, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Stack, Typography } from "@mui/material";
+import { DatabaseContext, WineModel, WineTypes } from "@/context/database";
+import { DeleteRounded, OneKSharp, Recommend, ThumbDownAltOutlined, ThumbDownAltRounded, ThumbDownOffAlt, ThumbUpAltOutlined, ThumbUpOffAlt, ThumbUpRounded, WineBar } from "@mui/icons-material";
+import { Badge, Checkbox, Box, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Stack, Typography, ListItemButton, ListItemIcon, Tooltip, capitalize } from "@mui/material";
+import { blue, blueGrey, deepOrange, grey, orange, pink, purple, red, white } from "@mui/material/colors";
 import { Models } from "appwrite";
 import { useContext, useEffect, useState } from "react";
 
@@ -35,6 +36,26 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
     </Typography>;
 
 
+    const getWineColor = (w: WineModel): string => {
+        const colorType = w.type as WineTypes;
+        switch (colorType) {
+            case "white":
+                return grey[400];
+            case "red":
+                return red[900];
+            case "rose":
+                return pink[300];
+            case "port":
+                return purple[900];
+            case "dessert":
+                return deepOrange[700];
+            case "sparkling":
+                return blueGrey[200];
+            default:
+                return grey[50];
+        }
+    }
+
     const secondary = <Box sx={{ pt: 0.5 }}>
         <IconButton sx={{ p: 0, pr: 0.4, color: "primary.main" }}>
             <ThumbUpOffAlt />
@@ -52,11 +73,7 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
 
     </Box>;
     return <ListItem
-        sx={{
-        }}
-        divider
-
-        // disablePadding
+        disablePadding
         secondaryAction={
             <Checkbox
                 onChange={() => onItemSelected(wine)}
@@ -66,14 +83,16 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
             />
         }
     >
-        <ListItemText primary={primary} secondary={secondary} />
-        {/* <ListItemSecondaryAction>
-            <IconButton disabled={disableActions} edge='end' onClick={() => {
-                onDelete(wine.$id)
-            }}>
-                <DeleteRounded />
-            </IconButton>
-        </ListItemSecondaryAction> */}
+        <ListItemButton divider  >
+            <ListItemIcon sx={{ minWidth: 40 }} >
+                <Tooltip title={capitalize(wine.type)}>
+                    <WineBar sx={{
+                        color: getWineColor(wine),
+                    }} />
+                </Tooltip>
+            </ListItemIcon>
+            <ListItemText primary={primary} secondary={secondary} />
+        </ListItemButton>
 
     </ListItem>
 }

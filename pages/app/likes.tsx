@@ -114,7 +114,7 @@ export default function Likes() {
 
                 {likedWines.length !== 0 &&
                     <Box sx={{ mb: 15, bgcolor: 'background.paper' }}>
-                        <List >
+                        <List sx={{ py: 0 }} >
                             {likedWines.map((el) =>
                                 <WineListItem
                                     key={el.$id}
