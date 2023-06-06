@@ -68,7 +68,7 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
     }
     const addLike = async (user: Models.User<{}>, wine: WineInputModel) => {
         const resp = await addWineToCollection(user, wine, 'likes');
-        setLikes([resp, ...likes]);
+        setLikes([resp as WineModel, ...likes]);
     }
 
     const deleteWineFromCollection = async (id: string, collection: 'likes' | 'dislikes') => {
