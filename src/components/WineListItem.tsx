@@ -1,9 +1,10 @@
 import { DatabaseContext, WineModel, WineTypes } from "@/context/database";
-import { DeleteRounded, OneKSharp, Recommend, ThumbDownAltOutlined, ThumbDownAltRounded, ThumbDownOffAlt, ThumbUpAltOutlined, ThumbUpOffAlt, ThumbUpRounded, WineBar } from "@mui/icons-material";
-import { Badge, Checkbox, Box, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Stack, Typography, ListItemButton, ListItemIcon, Tooltip, capitalize } from "@mui/material";
-import { amber, blue, blueGrey, cyan, deepOrange, grey, orange, pink, purple, red, white, yellow } from "@mui/material/colors";
-import { Models } from "appwrite";
+import { ThumbDownOffAlt, ThumbUpOffAlt } from "@mui/icons-material";
+import { Checkbox, Box, IconButton, ListItem, ListItemText, Typography, ListItemButton, ListItemIcon, Tooltip, capitalize } from "@mui/material";
+import { amber, blueGrey, cyan, grey, pink, purple, red } from "@mui/material/colors";
 import { useContext, useEffect, useState } from "react";
+import { GlassWine } from 'mdi-material-ui';
+
 
 type WineListItemProps = {
     wine: WineModel,
@@ -58,14 +59,14 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
 
     const secondary = <Box sx={{ pt: 0.5 }}>
         <IconButton sx={{ p: 0, pr: 0.4, color: "primary.main" }}>
-            <ThumbUpOffAlt />
+            <ThumbUpOffAlt fontSize="small" />
         </IconButton>
         <Typography variant="caption">
             {stats ? stats.likes : 0}
         </Typography>
 
         <IconButton sx={{ p: 0, pr: 0.4, pl: 1.3, color: "primary.main" }}>
-            <ThumbDownOffAlt />
+            <ThumbDownOffAlt fontSize="small" />
         </IconButton>
         <Typography variant="caption">
             {stats ? stats.dislikes : 0}
@@ -84,11 +85,11 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
         }
     >
         <ListItemButton divider  >
-            <ListItemIcon sx={{ minWidth: 40 }} >
+            <ListItemIcon sx={{ minWidth: 48 }} >
                 <Tooltip title={capitalize(wine.type)}>
-                    <WineBar sx={{
+                    <GlassWine sx={{
                         color: getWineColor(wine),
-                    }} />
+                    }} fontSize="large" />
                 </Tooltip>
             </ListItemIcon>
             <ListItemText primary={primary} secondary={secondary} />
