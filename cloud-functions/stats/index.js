@@ -37,6 +37,14 @@ module.exports = async function (req, res) {
     const parsedEvent = eventName.split('.');
     console.log('parsedEvent', parsedEvent);
 
+
+    if (eventData.wine_id.indexOf('USER_CUSTOM:') > -1){
+      console.log('Wine is user custom, skipping execution');
+      res.send({ success: true, message: 'Wine is user custom, skipping execution' });
+      return;
+    }
+
+
     const query = [
       sdk.Query.equal('wine_id', eventData.wine_id),
       sdk.Query.equal('type', eventData.type),
