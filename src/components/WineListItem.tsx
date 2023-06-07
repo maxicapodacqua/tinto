@@ -37,26 +37,6 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
     </Typography>;
 
 
-    const getWineColor = (w: WineModel): string => {
-        const colorType = w.type as WineTypes;
-        switch (colorType) {
-            case "white":
-                return amber[200];
-            case "red":
-                return red[900];
-            case "rose":
-                return pink[300];
-            case "port":
-                return purple[900];
-            case "dessert":
-                return cyan[900];
-            case "sparkling":
-                return blueGrey[200];
-            default:
-                return grey[50];
-        }
-    }
-
     const secondary = <Box sx={{ pt: 0.5 }}>
         <IconButton sx={{ p: 0, pr: 0.4, color: "primary.main" }}>
             <ThumbUpOffAlt fontSize="small" />
@@ -78,7 +58,7 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
         secondaryAction={
             <Checkbox
                 onChange={() => onItemSelected(wine)}
-                color="info"
+                color="primary"
                 edge={'end'}
                 checked={checked}
             />
@@ -88,8 +68,8 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
             <ListItemIcon sx={{ minWidth: 48 }} >
                 <Tooltip title={capitalize(wine.type)}>
                     <Stack sx={{pt:1}} alignItems={'center'}>
-                    <GlassWine color="primary" fontSize="large" />
-                    <Typography variant="subtitle1">
+                    <GlassWine fontSize="large" />
+                    <Typography color="primary" variant="subtitle2">
                         {capitalize(wine.type)[0]}
                     </Typography>
                     </Stack>
