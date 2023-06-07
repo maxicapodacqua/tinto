@@ -1,4 +1,4 @@
-import { Box, CardContent, Typography, Card, IconButton, Grid, capitalize } from "@mui/material";
+import { Box, CardContent, Typography, Card, IconButton, Grid, capitalize, Chip } from "@mui/material";
 import { WineMetrics, WineStatModel } from "@/context/database";
 import React from "react";
 
@@ -32,10 +32,9 @@ export default function TopWines({ title, topWines, metricIcon, metricField }: P
                                         {w.name}
                                     </Typography>
                                 </Box>
-                                <Typography variant="subtitle2" component={'div'} sx={{ my: 1.5 }} color="text.secondary">
-                                    {capitalize(w.type)}
-                                </Typography>
-
+                                <Box component={'div'} sx={{ my: 1.5 }} color="text.secondary">
+                                    <Chip variant="outlined" label={capitalize(w.type)} />
+                                </Box>
                                 <IconButton sx={{ p: 0, pr: 0.4, color: "primary.main" }}>
                                     {metricIcon}
                                 </IconButton>
