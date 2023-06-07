@@ -59,6 +59,7 @@ module.exports = async function (req, res) {
       const documentData = {
         'wine_id': eventData.wine_id,
         'type': eventData.type,
+        'name': eventData.name,
         [metric]: metricVal,
       };
       console.log('createDocument data:', documentData);

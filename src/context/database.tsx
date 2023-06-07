@@ -11,6 +11,8 @@ type DatabaseContextValue = {
     refresh: () => Promise<void>,
     loading: boolean,
     likes: WineModel[],
+    topLikes: WineStatModel[],
+    topDislikes: WineStatModel[],
     addLike: (user: Models.User<{}>, wine: WineInputModel) => Promise<void>,
     deleteLike: (id: string | string[]) => Promise<void>,
     getStats: (wine_id: string, type: string) => Promise<Models.Document | null>,
@@ -18,11 +20,15 @@ type DatabaseContextValue = {
 export type WineTypes = 'red' | 'white' | 'rose' | 'port' | 'dessert' | 'sparkling';
 type WineInputModel = { wine_id: string, type: string, name: string };
 export type WineModel = WineInputModel & Models.Document;
+export type WineMetrics = {likes: number, dislikes: number};
+export type WineStatModel = WineInputModel & Models.Document & WineMetrics;
 
 export function DatabaseContextProvider({ children }: React.PropsWithChildren): JSX.Element {
 
     const [likes, setLikes] = useState<WineModel[]>([]);
     const [loading, setLoading] = useState(true);
+    const [topLikes, setTopLikes] = useState<WineStatModel[]>([]);
+    const [topDislikes, setTopDisLikes] = useState<WineStatModel[]>([]);
 
     const { user, loading: authLoading } = useContext(AuthContext);
 
@@ -34,17 +40,61 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
 
     const refresh = async () => {
         setLoading(true);
-        appwriteDatabase.listDocuments('tinto', 'likes', [
-            Query.orderDesc('$createdAt'),
+        Promise.all([
+            // Likes
+            appwriteDatabase.listDocuments('tinto', 'likes', [
+                Query.orderDesc('$createdAt'),
+            ]).then(r => setLikes(r.documents as WineModel[])),
+
+            // Home page stats
+            appwriteDatabase.listDocuments('tinto', 'stats', [
+                Query.greaterThan('likes', 0),
+                Query.orderDesc('likes'),
+                Query.limit(5),
+            ]).then(r => setTopLikes(r.documents as WineStatModel[])),
+            appwriteDatabase.listDocuments('tinto', 'stats', [
+                Query.greaterThan('dislikes', 0),
+                Query.orderDesc('dislikes'),
+                Query.limit(5),
+            ]).then(r => setTopDisLikes(r.documents as WineStatModel[])),
         ])
-            .then((resp) => {
-                setLikes(resp.documents as WineModel[]);
-            })
-            .catch((reason) => {
-                console.error(reason);
-            }).finally(() => {
-                setLoading(false);
-            });
+            .catch(console.error)
+            .finally(() => setLoading(false))
+            ;
+        // try {
+        //     setLoading(true);
+
+        //     const likesResp = await appwriteDatabase.listDocuments('tinto', 'likes', [
+        //         Query.orderDesc('$createdAt'),
+        //     ]);
+        //     setLikes(likesResp.documents as WineModel[]);
+
+        //     const topLikesResp = await appwriteDatabase.listDocuments('tinto', 'stats', [
+        //         Query.greaterThan('likes', 0),
+        //         Query.orderDesc('likes'),
+        //         Query.limit(5),
+        //     ]);
+        //     setTopLikes(topLikesResp.documents as WineModel[]);
+
+
+        //     const topDisLikesResp = await appwriteDatabase.listDocuments('tinto', 'stats', [
+        //         Query.greaterThan('dislikes', 0),
+        //         Query.orderDesc('dislikes'),
+        //         Query.limit(5),
+        //     ]);
+        //     setTopDisLikes(topDisLikesResp.documents as WineModel[]);
+
+        // } finally {
+        //     setLoading(false);
+        // }
+        // .then((resp) => {
+        //     setLikes(resp.documents as WineModel[]);
+        // })
+        // .catch((reason) => {
+        //     console.error(reason);
+        // }).finally(() => {
+        //     setLoading(false);
+        // });
     }
 
 
@@ -124,6 +174,8 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
         refresh,
         loading,
         likes,
+        topLikes,
+        topDislikes,
         addLike,
         deleteLike,
         getStats

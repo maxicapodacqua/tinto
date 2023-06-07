@@ -1,17 +1,18 @@
-import * as React from 'react';
+import {useContext, useEffect} from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { AuthContext } from '@/context/auth';
 import { CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
+import { DatabaseContext } from '@/context/database';
 
 export default function Home() {
 
-  const {loading, user} = React.useContext(AuthContext);
+  const {loading, user} = useContext(AuthContext);
 
   const router = useRouter();
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
