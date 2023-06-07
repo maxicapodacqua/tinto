@@ -188,7 +188,7 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
                         defaultValue={wineTypesConsts[0]}
                     >
                         {wineTypesConsts.map(type => (
-                            <FormControlLabel value={type} control={<Radio />} label={capitalize(type)} />
+                            <FormControlLabel key={type} value={type} control={<Radio />} label={capitalize(type)} />
                         ))}
                     </RadioGroup>
                 </DialogContent>
