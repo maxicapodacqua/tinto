@@ -1,6 +1,6 @@
 import { DatabaseContext, WineModel, WineTypes } from "@/context/database";
 import { ThumbDownOffAlt, ThumbUpOffAlt } from "@mui/icons-material";
-import { Checkbox, Box, IconButton, ListItem, ListItemText, Typography, ListItemButton, ListItemIcon, Tooltip, capitalize } from "@mui/material";
+import { Checkbox, Box, IconButton, ListItem, ListItemText, Typography, ListItemButton, ListItemIcon, Tooltip, capitalize, Stack } from "@mui/material";
 import { amber, blueGrey, cyan, grey, pink, purple, red } from "@mui/material/colors";
 import { useContext, useEffect, useState } from "react";
 import { GlassWine } from 'mdi-material-ui';
@@ -87,9 +87,12 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
         <ListItemButton divider  >
             <ListItemIcon sx={{ minWidth: 48 }} >
                 <Tooltip title={capitalize(wine.type)}>
-                    <GlassWine sx={{
-                        color: getWineColor(wine),
-                    }} fontSize="large" />
+                    <Stack sx={{pt:1}} alignItems={'center'}>
+                    <GlassWine color="primary" fontSize="large" />
+                    <Typography variant="subtitle1">
+                        {capitalize(wine.type)[0]}
+                    </Typography>
+                    </Stack>
                 </Tooltip>
             </ListItemIcon>
             <ListItemText primary={primary} secondary={secondary} />
