@@ -5,6 +5,7 @@ import { useQuery } from 'urql';
 import { graphql } from '../../src/gql';
 import { Red, White, Rose, Dessert, Port, Sparkling, WineSearchQuery } from "@/gql/graphql";
 import { WineTypes, wineTypesConsts } from "@/context/database";
+import { ID } from "appwrite";
 
 const filter = createFilterOptions<AutocompleteSearchResult>();
 
@@ -94,18 +95,16 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log(data);
-        console.log(data.get('type'));
-        // setError(false);
 
-        // if (data.get('password') !== data.get('confirmPassword')) {
-        //     setError("Password don't match");
-        //     return;
-        // }
-
-        // signup(data.get('email') as string, data.get('password') as string, data.get('name') as string)
-        //     .catch((e: AppwriteException) => setError(e.message));
-
+        const newWine: AutocompleteSearchResult = {
+            label: data.get('name') as string,
+            type: data.get('type') as WineTypes,
+            value: 'USER_CUSTOM:' + crypto.randomUUID(), // creating unique id
+            isUserCustom: true,
+        }
+        setWineSelected(newWine);
+        onSelect(newWine);
+        setOpenDialog(false);
     };
 
     return <>
@@ -159,13 +158,12 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
             isOptionEqualToValue={(option, value) => option.value == value.value && option.type === value.type}
         />
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-            <form  onSubmit={handleSubmit} >
+            <form onSubmit={handleSubmit} >
                 <DialogTitle>Add a new wine</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Did we miss a wine in the list?
                     </DialogContentText>
-
 
                     <TextField
                         sx={{ mb: 2 }}
@@ -175,20 +173,18 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
                         required
                         id="name"
                         label="Name"
-                        value={wineSelected?.value}
+                        defaultValue={wineSelected?.value}
                     />
 
                     <FormLabel id='wine-types'>Type</FormLabel>
                     <RadioGroup
                         aria-labelledby='wine-types'
                         name='type'
-                        // row
                         defaultValue={wineTypesConsts[0]}
                     >
                         {wineTypesConsts.map(type => (
                             <FormControlLabel value={type} control={<Radio />} label={capitalize(type)} />
                         ))}
-
                     </RadioGroup>
                 </DialogContent>
                 <DialogActions>
