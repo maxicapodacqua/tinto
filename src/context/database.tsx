@@ -17,7 +17,8 @@ type DatabaseContextValue = {
     deleteLike: (id: string | string[]) => Promise<void>,
     getStats: (wine_id: string, type: string) => Promise<Models.Document | null>,
 };
-export type WineTypes = 'red' | 'white' | 'rose' | 'port' | 'dessert' | 'sparkling';
+export const wineTypesConsts = ['red', 'white' , 'rose' , 'port' , 'dessert' , 'sparkling'] as const;
+export type WineTypes = typeof wineTypesConsts[number];
 type WineInputModel = { wine_id: string, type: string, name: string };
 export type WineModel = WineInputModel & Models.Document;
 export type WineMetrics = {likes: number, dislikes: number};
