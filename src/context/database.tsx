@@ -17,11 +17,11 @@ type DatabaseContextValue = {
     deleteLike: (id: string | string[]) => Promise<void>,
     getStats: (wine_id: string, type: string) => Promise<Models.Document | null>,
 };
-export const wineTypesConsts = ['red', 'white' , 'rose' , 'port' , 'dessert' , 'sparkling'] as const;
+export const wineTypesConsts = ['red', 'white', 'rose', 'port', 'dessert', 'sparkling'] as const;
 export type WineTypes = typeof wineTypesConsts[number];
 type WineInputModel = { wine_id: string, type: string, name: string };
 export type WineModel = WineInputModel & Models.Document;
-export type WineMetrics = {likes: number, dislikes: number};
+export type WineMetrics = { likes: number, dislikes: number };
 export type WineStatModel = WineInputModel & Models.Document & WineMetrics;
 
 export function DatabaseContextProvider({ children }: React.PropsWithChildren): JSX.Element {
@@ -62,40 +62,6 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
             .catch(console.error)
             .finally(() => setLoading(false))
             ;
-        // try {
-        //     setLoading(true);
-
-        //     const likesResp = await appwriteDatabase.listDocuments('tinto', 'likes', [
-        //         Query.orderDesc('$createdAt'),
-        //     ]);
-        //     setLikes(likesResp.documents as WineModel[]);
-
-        //     const topLikesResp = await appwriteDatabase.listDocuments('tinto', 'stats', [
-        //         Query.greaterThan('likes', 0),
-        //         Query.orderDesc('likes'),
-        //         Query.limit(5),
-        //     ]);
-        //     setTopLikes(topLikesResp.documents as WineModel[]);
-
-
-        //     const topDisLikesResp = await appwriteDatabase.listDocuments('tinto', 'stats', [
-        //         Query.greaterThan('dislikes', 0),
-        //         Query.orderDesc('dislikes'),
-        //         Query.limit(5),
-        //     ]);
-        //     setTopDisLikes(topDisLikesResp.documents as WineModel[]);
-
-        // } finally {
-        //     setLoading(false);
-        // }
-        // .then((resp) => {
-        //     setLikes(resp.documents as WineModel[]);
-        // })
-        // .catch((reason) => {
-        //     console.error(reason);
-        // }).finally(() => {
-        //     setLoading(false);
-        // });
     }
 
 
