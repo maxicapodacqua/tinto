@@ -102,10 +102,15 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
             value: 'USER_CUSTOM:' + crypto.randomUUID(), // creating unique id
             isUserCustom: true,
         }
-        setWineSelected(newWine);
         onSelect(newWine);
         setOpenDialog(false);
     };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setWineSearch('');
+        setWineSelected(null);
+    }
 
     return <>
         <Autocomplete
@@ -157,7 +162,7 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
             }}
             isOptionEqualToValue={(option, value) => option.value == value.value && option.type === value.type}
         />
-        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
             <form onSubmit={handleSubmit} >
                 <DialogTitle>Add a new wine</DialogTitle>
                 <DialogContent>
@@ -188,7 +193,7 @@ export default function WineSearch({ onSelect }: { onSelect: (wine: Autocomplete
                     </RadioGroup>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="outlined" onClick={() => setOpenDialog(false)}>Cancel</Button>
+                    <Button variant="outlined" onClick={handleCloseDialog}>Cancel</Button>
                     <Button type="submit" color="secondary" variant="contained">Add</Button>
                 </DialogActions>
             </form>
