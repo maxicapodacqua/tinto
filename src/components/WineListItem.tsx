@@ -38,14 +38,14 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
 
 
     const secondary = <Box sx={{ pt: 0.5 }}>
-        <IconButton sx={{ p: 0, pr: 0.4, color: "primary.main" }}>
+        <IconButton sx={{ p: 0, pr: 0.4, }}>
             <ThumbUpOffAlt fontSize="small" />
         </IconButton>
         <Typography variant="caption">
             {stats ? stats.likes : 0}
         </Typography>
 
-        <IconButton sx={{ p: 0, pr: 0.4, pl: 1.3, color: "primary.main" }}>
+        <IconButton sx={{ p: 0, pr: 0.4, pl: 1.3, }}>
             <ThumbDownOffAlt fontSize="small" />
         </IconButton>
         <Typography variant="caption">
@@ -67,11 +67,11 @@ export default function WineListItem({ wine, disableActions, onItemSelected, che
         <ListItemButton divider  >
             <ListItemIcon sx={{ minWidth: 48 }} >
                 <Tooltip title={capitalize(wine.type)}>
-                    <Stack sx={{pt:1}} alignItems={'center'}>
-                    <GlassWine fontSize="large" />
-                    <Typography color="primary" variant="subtitle2">
-                        {capitalize(wine.type)[0]}
-                    </Typography>
+                    <Stack sx={{ pt: 1 }} alignItems={'center'}>
+                        <GlassWine fontSize="large" />
+                        <Typography color="primary" variant="subtitle2">
+                            {capitalize(wine.type)[0]}
+                        </Typography>
                     </Stack>
                 </Tooltip>
             </ListItemIcon>

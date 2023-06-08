@@ -35,7 +35,7 @@ export default function TopWines({ title, topWines, metricIcon, metricField }: P
                                 <Box component={'div'} sx={{ my: 1.5 }} color="text.secondary">
                                     <Chip variant="outlined" label={capitalize(w.type)} />
                                 </Box>
-                                <IconButton sx={{ p: 0, pr: 0.4, color: "primary.main" }}>
+                                <IconButton sx={{ p: 0, pr: 0.4}}>
                                     {metricIcon}
                                 </IconButton>
                                 <Typography variant="caption">{w[metricField]}</Typography>

@@ -44,13 +44,13 @@ export default function AppHome(): JSX.Element {
                         <TopWines
                             title="❤️ Top Liked Wines"
                             topWines={topLikes}
-                            metricIcon={<ThumbUpOffAlt />}
+                            metricIcon={<ThumbUpOffAlt/>}
                             metricField="likes" />}
                     {topDislikes.length > 0 &&
                         <TopWines
                             title="💔 Top DisLiked Wines"
                             topWines={topDislikes}
-                            metricIcon={<ThumbDownOffAlt />}
+                            metricIcon={<ThumbDownOffAlt/>}
                             metricField="dislikes"
                         />}
                 </Box>

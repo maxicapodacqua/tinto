@@ -157,7 +157,7 @@ export default function WineList({title, wines, addWine, deleteWine} : Props) {
                         onClose={() => setSpeedDialOpen(false)}
                         sx={{
                             position: 'fixed',
-                            bottom: theme.spacing(10),
+                            bottom: theme.spacing(9),
                             right: theme.spacing(3.5),
                         }}
                         ariaLabel="options"
