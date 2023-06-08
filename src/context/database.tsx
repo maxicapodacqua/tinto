@@ -19,7 +19,7 @@ type DatabaseContextValue = {
 };
 export const wineTypesConsts = ['red', 'white', 'rose', 'port', 'dessert', 'sparkling'] as const;
 export type WineTypes = typeof wineTypesConsts[number];
-type WineInputModel = { wine_id: string, type: string, name: string };
+export type WineInputModel = { wine_id: string, type: string, name: string };
 export type WineModel = WineInputModel & Models.Document;
 export type WineMetrics = { likes: number, dislikes: number };
 export type WineStatModel = WineInputModel & Models.Document & WineMetrics;
