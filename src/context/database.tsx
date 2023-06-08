@@ -11,10 +11,13 @@ type DatabaseContextValue = {
     refresh: () => Promise<void>,
     loading: boolean,
     likes: WineModel[],
+    dislikes: WineModel[],
     topLikes: WineStatModel[],
     topDislikes: WineStatModel[],
     addLike: (user: Models.User<{}>, wine: WineInputModel) => Promise<void>,
     deleteLike: (id: string | string[]) => Promise<void>,
+    addDislike: (user: Models.User<{}>, wine: WineInputModel) => Promise<void>,
+    deleteDislike: (id: string | string[]) => Promise<void>,
     getStats: (wine_id: string, type: string) => Promise<Models.Document | null>,
 };
 export const wineTypesConsts = ['red', 'white', 'rose', 'port', 'dessert', 'sparkling'] as const;
@@ -27,6 +30,7 @@ export type WineStatModel = WineInputModel & Models.Document & WineMetrics;
 export function DatabaseContextProvider({ children }: React.PropsWithChildren): JSX.Element {
 
     const [likes, setLikes] = useState<WineModel[]>([]);
+    const [dislikes, setDislikes] = useState<WineModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [topLikes, setTopLikes] = useState<WineStatModel[]>([]);
     const [topDislikes, setTopDisLikes] = useState<WineStatModel[]>([]);
@@ -46,6 +50,10 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
             appwriteDatabase.listDocuments('tinto', 'likes', [
                 Query.orderDesc('$createdAt'),
             ]).then(r => setLikes(r.documents as WineModel[])),
+            // Dislikes
+            appwriteDatabase.listDocuments('tinto', 'dislikes', [
+                Query.orderDesc('$createdAt'),
+            ]).then(r => setDislikes(r.documents as WineModel[])),
 
             // Home page stats
             appwriteDatabase.listDocuments('tinto', 'stats', [
@@ -87,6 +95,12 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
         setLikes([resp as WineModel, ...likes]);
     }
 
+    const addDislike = async (user: Models.User<{}>, wine: WineInputModel) => {
+        const resp = await addWineToCollection(user, wine, 'dislikes');
+        setDislikes([resp as WineModel, ...dislikes]);
+    }
+
+
     const deleteWinesFromCollection = async (ids: string[], collection: 'likes' | 'dislikes') => {
         setLoading(true);
 
@@ -123,6 +137,18 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
         setLikes(likedWineUpdated);
     };
 
+    const deleteDislike = async (id: string | string[]) => {
+        let ids: string[];
+        if (!Array.isArray(id)) {
+            ids = [id];
+        } else {
+            ids = id;
+        }
+        await deleteWinesFromCollection(ids, 'dislikes');
+        const listUpdated = dislikes.filter((w) => !ids.includes(w.$id));
+        setDislikes(listUpdated);
+    };
+
     const getStats = async (wine_id: string, type: string): Promise<Models.Document | null> => {
         try {
             setLoading(true);
@@ -141,10 +167,13 @@ export function DatabaseContextProvider({ children }: React.PropsWithChildren): 
         refresh,
         loading,
         likes,
+        dislikes,
         topLikes,
         topDislikes,
         addLike,
         deleteLike,
+        addDislike,
+        deleteDislike,
         getStats
     }}>
         {children}
